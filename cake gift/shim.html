@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كل عام وانتي بخير شيمي - Interactive Birthday Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #fce4ec, #f3e5f5, #fce4ec);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background floating hearts */
+        .floating-hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            color: #f8bbd9;
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .heart:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; font-size: 20px; }
+        .heart:nth-child(2) { left: 20%; top: 80%; animation-delay: 1s; font-size: 16px; }
+        .heart:nth-child(3) { left: 30%; top: 40%; animation-delay: 2s; font-size: 24px; }
+        .heart:nth-child(4) { left: 40%; top: 70%; animation-delay: 0.5s; font-size: 18px; }
+        .heart:nth-child(5) { left: 50%; top: 10%; animation-delay: 1.5s; font-size: 22px; }
+        .heart:nth-child(6) { left: 60%; top: 60%; animation-delay: 2.5s; font-size: 16px; }
+        .heart:nth-child(7) { left: 70%; top: 30%; animation-delay: 3s; font-size: 20px; }
+        .heart:nth-child(8) { left: 80%; top: 90%; animation-delay: 0.8s; font-size: 18px; }
+        .heart:nth-child(9) { left: 90%; top: 50%; animation-delay: 1.8s; font-size: 24px; }
+        .heart:nth-child(10) { left: 5%; top: 60%; animation-delay: 2.2s; font-size: 16px; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Audio Controls */
+        .audio-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+
+        .audio-btn {
+            background: #e91e63;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+            transition: all 0.3s ease;
+            font-size: 16px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .audio-btn:hover {
+            background: #c2185b;
+            transform: scale(1.1);
+        }
+
+        .stop-btn {
+            background: #f44336;
+        }
+
+        .stop-btn:hover {
+            background: #d32f2f;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .main-title {
+            font-size: 4rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #e91e63, #9c27b0, #e91e63);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+            animation: gradient-shift 3s ease-in-out infinite;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.8rem;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .love-message {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #e91e63;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .heart-icon {
+            color: #f44336;
+            animation: heartbeat 2s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+            margin-bottom: 80px;
+        }
+
+        /* Envelope Section */
+        .envelope-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .envelope-container {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .envelope {
+            width: 280px;
+            height: 180px;
+            background: linear-gradient(135deg, #f8bbd9, #f48fb1);
+            border-radius: 15px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.8s ease;
+        }
+
+        .envelope.opened {
+            transform: rotate(12deg);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 90px;
+            background: linear-gradient(135deg, #f48fb1, #f06292);
+            border-radius: 15px 15px 0 0;
+            transform-origin: top center;
+            transition: transform 0.8s ease;
+            z-index: 2;
+        }
+
+        .envelope-flap.opened {
+            transform: rotateX(180deg);
+        }
+
+        .envelope-flap::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            border-top: 40px solid #f06292;
+        }
+
+        .letter {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.8s ease;
+            z-index: 1;
+        }
+
+        .letter.opened {
+            transform: translateY(40px);
+        }
+
+        .letter-content {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .letter-title {
+            color: #e91e63;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .letter-lines {
+            margin-top: 10px;
+        }
+
+        .letter-line {
+            height: 2px;
+            background: #eee;
+            margin: 4px 0;
+            border-radius: 1px;
+        }
+
+        .letter-line:nth-child(1) { width: 100%; }
+        .letter-line:nth-child(2) { width: 75%; }
+        .letter-line:nth-child(3) { width: 100%; }
+        .letter-line:nth-child(4) { width: 60%; }
+
+        /* Bow */
+        .bow {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 0.6s ease;
+            z-index: 3;
+        }
+
+        .bow.removed {
+            opacity: 0;
+            transform: translateX(-50%) scale(0) rotate(180deg);
+        }
+
+        .bow-center {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .bow-left, .bow-right {
+            position: absolute;
+            top: 50%;
+            width: 40px;
+            height: 30px;
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            transform: translateY(-50%);
+        }
+
+        .bow-left {
+            left: -35px;
+            border-radius: 20px 5px 5px 20px;
+            transform: translateY(-50%) rotate(-15deg);
+        }
+
+        .bow-right {
+            right: -35px;
+            border-radius: 5px 20px 20px 5px;
+            transform: translateY(-50%) rotate(15deg);
+        }
+
+        .bow-knot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 30px;
+            background: #d32f2f;
+            border-radius: 6px;
+        }
+
+        /* Button */
+        .message-button {
+            background: linear-gradient(135deg, #e91e63, #9c27b0);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .message-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(233, 30, 99, 0.4);
+        }
+
+        .message-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Cake Section */
+        .cake-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cake {
+            position: relative;
+        }
+
+        .cake-layer {
+            border-radius: 50%;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .cake-layer-1 {
+            width: 200px;
+            height: 80px;
+            background: linear-gradient(135deg, #ffcc80, #ffb74d);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .cake-layer-2 {
+            width: 160px;
+            height: 60px;
+            background: linear-gradient(135deg, #f8bbd9, #f48fb1);
+            margin-top: -30px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .cake-layer-3 {
+            width: 120px;
+            height: 45px;
+            background: linear-gradient(135deg, #f48fb1, #f06292);
+            margin-top: -25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .cake-layer::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 15px;
+            right: 15px;
+            height: 15px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+        }
+
+        /* Cream decorations */
+        .cream {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .cream-1 { width: 25px; height: 25px; top: -10px; left: 30px; }
+        .cream-2 { width: 18px; height: 18px; top: -5px; right: 30px; }
+        .cream-3 { width: 22px; height: 22px; top: 15px; left: 45px; }
+        .cream-4 { width: 15px; height: 15px; top: 15px; right: 45px; }
+
+        /* Candles */
+        .candles {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .candle {
+            position: relative;
+        }
+
+        .candle-stick {
+            width: 8px;
+            height: 45px;
+            background: linear-gradient(135deg, #fff59d, #ffeb3b);
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .flame {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 12px;
+            background: radial-gradient(circle, #ff9800, #f57c00);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flicker 1.5s ease-in-out infinite alternate;
+        }
+
+        .flame::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 4px;
+            background: rgba(255, 193, 7, 0.6);
+            border-radius: 50%;
+        }
+
+        .candle:nth-child(1) .flame { animation-delay: 0s; }
+        .candle:nth-child(2) .flame { animation-delay: 0.3s; }
+        .candle:nth-child(3) .flame { animation-delay: 0.6s; }
+        .candle:nth-child(4) .flame { animation-delay: 0.9s; }
+        .candle:nth-child(5) .flame { animation-delay: 1.2s; }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1) rotate(-1deg); opacity: 1; }
+            100% { transform: translateX(-50%) scale(0.9) rotate(1deg); opacity: 0.8; }
+        }
+
+        /* Message Modal */
+        .message-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .message-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .message-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 10px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .message-text {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .typing-cursor {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 80px;
+            padding-top: 40px;
+            border-top: 2px solid rgba(233, 30, 99, 0.2);
+            color: #666;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .footer .creator {
+            color: #e91e63;
+            font-weight: bold;
+        }
+
+        .footer .recipient {
+            color: #9c27b0;
+            font-weight: bold;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.4rem;
+            }
+
+            .love-message {
+                font-size: 1.8rem;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .envelope {
+                width: 240px;
+                height: 150px;
+            }
+
+            .cake-layer-1 {
+                width: 160px;
+                height: 65px;
+            }
+
+            .cake-layer-2 {
+                width: 130px;
+                height: 50px;
+            }
+
+            .cake-layer-3 {
+                width: 100px;
+                height: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background floating hearts -->
+    <div class="floating-hearts">
+        <div class="heart">♥</div>
+        <div class="heart">♥</div>
+        <div class="heart">♥</div>
+        <div class="heart">♥</div>
+        <div class="heart">♥</div>
+        <div class="heart">♥</div>
+        <div class="heart">♥</div>
+        <div class="heart">♥</div>
+        <div class="heart">♥</div>
+        <div class="heart">♥</div>
+    </div>
+
+    <!-- Audio -->
+    <audio id="backgroundAudio" loop>
+        <source src="audio.mp3.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Audio Controls -->
+    <div class="audio-controls">
+        <button class="audio-btn" id="playPauseBtn">
+            <span id="playPauseIcon">▶</span>
+        </button>
+        <button class="audio-btn stop-btn" id="stopBtn">
+            <span>⏹</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="main-title">كل عام وانتي بخير شيمي</h1>
+            <p class="subtitle">
+                27/7 بهذا اليوم ولدت احلى بنت <br>
+                <strong>وهي انتي</strong>
+            </p>
+            <p class="love-message">
+                <span class="heart-icon">♥</span>
+                احبك شيمي
+                <span class="heart-icon">♥</span>
+            </p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Envelope Section -->
+            <div class="envelope-section">
+                <div class="envelope-container">
+                    <div class="envelope" id="envelope">
+                        <div class="envelope-flap" id="envelopeFlap">
+                        </div>
+                        <div class="letter" id="letter">
+                            <div class="letter-content">
+                                <p class="letter-title">حبيبي شيمي</p>
+                                <p>كل عام وانتي اعوامي</p>
+                                <div class="letter-lines">
+                                    <div class="letter-line"></div>
+                                    <div class="letter-line"></div>
+                                    <div class="letter-line"></div>
+                                    <div class="letter-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bow -->
+                    <div class="bow" id="bow">
+                        <div class="bow-center">
+                            <div class="bow-left"></div>
+                            <div class="bow-right"></div>
+                            <div class="bow-knot"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="message-button" id="messageButton">
+                    <span>🎁</span>
+                    اضغطي حتى تشوفي رسالتك
+                </button>
+            </div>
+
+            <!-- Cake Section -->
+            <div class="cake-section">
+                <div class="cake">
+                    <div class="candles">
+                        <div class="candle">
+                            <div class="candle-stick"></div>
+                            <div class="flame"></div>
+                        </div>
+                        <div class="candle">
+                            <div class="candle-stick"></div>
+                            <div class="flame"></div>
+                        </div>
+                        <div class="candle">
+                            <div class="candle-stick"></div>
+                            <div class="flame"></div>
+                        </div>
+                        <div class="candle">
+                            <div class="candle-stick"></div>
+                            <div class="flame"></div>
+                        </div>
+                        <div class="candle">
+                            <div class="candle-stick"></div>
+                            <div class="flame"></div>
+                        </div>
+                    </div>
+                    <div class="cake-layer cake-layer-1">
+                        <div class="cream cream-1"></div>
+                        <div class="cream cream-2"></div>
+                    </div>
+                    <div class="cake-layer cake-layer-2">
+                        <div class="cream cream-3"></div>
+                        <div class="cream cream-4"></div>
+                    </div>
+                    <div class="cake-layer cake-layer-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Site created by <span class="creator">Mido</span> as a gift to <span class="recipient">Shimmy</span></p>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="message-modal" id="messageModal">
+        <div class="message-content">
+            <button class="close-button" id="closeButton">×</button>
+            <div class="message-text" id="messageText"></div>
+        </div>
+    </div>
+
+    <script>
+        // Birthday message
+        const birthdayMessage = `كل عام وانتي بخير شيمي
+كبرتي سنة دخلتي عامك ال ١٩ وعساه بداية افراحك. بداية خير لك وان شاءالله سنينك الجاية كلها احلام متحققة وخير لك ورزق لك وعسى كل سنينك تكون معي وكملت معك قريب السنتين يعيوني انتي
+زاد من حسنك عام بعد العام
+انتي منجد النعمة اللي محظوظ فيها
+محظوظ اني اعايدك بميلادك
+كل عام وانتي حسنك وزينك يزيد عن العام اعوام
+وكل عام وعسى تكوني اقرب الناس لي
+عسى سنينك كلها فرح وتحقيق احلام
+وعسى اعوامي معك عديدة
+ياحظي بيوم ميلادك اني معك
+وادري كلامي احسه قليل لك
+بس اللي بقلبي ماتكفيه سنين واعوام من الكلام اسعد شخص بهالدنيا هو انا يعني كلامي كله افكر فيه واكتبه بحيث يوصل لك قد ايش انا ممنون لك انك بحياتي انتي اللي تضحكني وتواسيني وتساعدني وتحفزني وتفرحني بابسط الامور منجد اكبر نعمة بدنيتي هي انتي يعيوني انتي
+ونهاية هالكلام
+احبك شيوم
+والله يديمك لي
+ويكتبك نصيب لي وعسى تكونين حلالي.`;
+
+        // State variables
+        let isEnvelopeOpen = false;
+        let isShowingMessage = false;
+        let currentWordIndex = 0;
+        let isAudioPlaying = false;
+        let bowRemoved = false;
+
+        // DOM elements
+        const envelope = document.getElementById('envelope');
+        const envelopeFlap = document.getElementById('envelopeFlap');
+        const letter = document.getElementById('letter');
+        const bow = document.getElementById('bow');
+        const messageButton = document.getElementById('messageButton');
+        const messageModal = document.getElementById('messageModal');
+        const messageText = document.getElementById('messageText');
+        const closeButton = document.getElementById('closeButton');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const playPauseIcon = document.getElementById('playPauseIcon');
+        const stopBtn = document.getElementById('stopBtn');
+        const backgroundAudio = document.getElementById('backgroundAudio');
+
+        // Split message into words
+        const messageWords = birthdayMessage.split(' ');
+
+        // Play/Pause audio control
+        playPauseBtn.addEventListener('click', function() {
+            if (isAudioPlaying) {
+                backgroundAudio.pause();
+                playPauseIcon.textContent = '▶';
+                isAudioPlaying = false;
+            } else {
+                backgroundAudio.play().catch(e => console.log('Audio play failed:', e));
+                playPauseIcon.textContent = '⏸';
+                isAudioPlaying = true;
+            }
+        });
+
+        // Stop audio control
+        stopBtn.addEventListener('click', function() {
+            backgroundAudio.pause();
+            backgroundAudio.currentTime = 0;
+            playPauseIcon.textContent = '▶';
+            isAudioPlaying = false;
+        });
+
+        // Message button click handler
+        messageButton.addEventListener('click', function() {
+            if (!bowRemoved && !isShowingMessage) {
+                // Start playing audio automatically
+                backgroundAudio.play().catch(e => console.log('Audio play failed:', e));
+                playPauseIcon.textContent = '⏸';
+                isAudioPlaying = true;
+
+                // Remove bow first
+                bowRemoved = true;
+                bow.classList.add('removed');
+                
+                setTimeout(() => {
+                    // Open envelope
+                    isEnvelopeOpen = true;
+                    envelope.classList.add('opened');
+                    envelopeFlap.classList.add('opened');
+                    letter.classList.add('opened');
+                    
+                    setTimeout(() => {
+                        // Show message modal
+                        showMessage();
+                    }, 800);
+                }, 600);
+            }
+        });
+
+        // Show message function
+        function showMessage() {
+            isShowingMessage = true;
+            messageModal.classList.add('show');
+            currentWordIndex = 0;
+            messageText.innerHTML = '';
+            typeMessage();
+        }
+
+        // Type message word by word
+        function typeMessage() {
+            if (currentWordIndex < messageWords.length) {
+                const currentText = messageWords.slice(0, currentWordIndex + 1).join(' ');
+                messageText.innerHTML = currentText + '<span class="typing-cursor">|</span>';
+                currentWordIndex++;
+                
+                setTimeout(typeMessage, 300);
+            } else {
+                messageText.innerHTML = messageWords.join(' ');
+            }
+        }
+
+        // Close message
+        function closeMessage() {
+            messageModal.classList.remove('show');
+            isShowingMessage = false;
+            currentWordIndex = 0;
+            
+            // Reset envelope state
+            setTimeout(() => {
+                isEnvelopeOpen = false;
+                bowRemoved = false;
+                envelope.classList.remove('opened');
+                envelopeFlap.classList.remove('opened');
+                letter.classList.remove('opened');
+                bow.classList.remove('removed');
+            }, 300);
+        }
+
+        // Close button event listener
+        closeButton.addEventListener('click', closeMessage);
+
+        // Close modal when clicking outside
+        messageModal.addEventListener('click', function(e) {
+            if (e.target === messageModal) {
+                closeMessage();
+            }
+        });
+
+        // Keyboard event for closing modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isShowingMessage) {
+                closeMessage();
+            }
+        });
+    </script>
+</body>
+</html>
